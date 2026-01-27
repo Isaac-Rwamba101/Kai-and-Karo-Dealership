@@ -8,8 +8,17 @@ import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.kaiandkaro.dealership.R
+import com.kaiandkaro.dealership.repositories.AuthRepository
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MyFirebaseMessagingService : FirebaseMessagingService() {
+
+    @Inject
+    lateinit var authRepository: AuthRepository
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         // Handle FCM messages here.
@@ -44,7 +53,13 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     private fun sendRegistrationToServer(token: String?) {
-        // TODO: Implement this method to send token to your app server.
+        GlobalScope.launch {
+            authRepository.getCurrentUser()?.uid?.let { uid ->
+                if (token != null) {
+                    authRepository.updateUserFCMToken(uid, token)
+                }
+            }
+        }
     }
 
     private fun sendNotification(messageBody: String) {

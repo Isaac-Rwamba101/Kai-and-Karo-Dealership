@@ -11,6 +11,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
+        println("GEMINI_DIAGNOSTIC_ID: " + defaultConfig.applicationId)
         applicationId = "com.kaiandkaro.dealership"
         minSdk = 23
         targetSdk = 34

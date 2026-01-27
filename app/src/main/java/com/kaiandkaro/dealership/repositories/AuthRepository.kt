@@ -1,4 +1,3 @@
-
 package com.kaiandkaro.dealership.repositories
 
 import com.google.firebase.auth.FirebaseUser
@@ -11,4 +10,5 @@ interface AuthRepository {
     suspend fun signOut()
     suspend fun getUserData(uid: String): User?
     suspend fun getUserRole(uid: String): String?
+    suspend fun updateUserFCMToken(uid: String, token: String)
 }

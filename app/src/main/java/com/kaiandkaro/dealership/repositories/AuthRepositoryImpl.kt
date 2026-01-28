@@ -41,8 +41,7 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getUserData(uid: String): User? {
-        val document = firestore.collection("users
-        ").document(uid).get().await()
+        val document = firestore.collection("users").document(uid).get().await()
         return document.toObject(User::class.java)
     }
 

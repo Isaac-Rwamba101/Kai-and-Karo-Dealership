@@ -13,7 +13,7 @@ firebaseBom = "33.1.2"
 navigationRuntimeKtx = "2.7.7"
 navigationCompose = "2.7.7"
 playServicesCastFramework = "21.5.0"
-hilt = "2.51.1"
+hilt = "2.48"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -46,4 +46,3 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
-

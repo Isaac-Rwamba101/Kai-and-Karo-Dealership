@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.hilt.android)
-    alias(libs.plugins.kotlin.compose)
     kotlin("kapt")
 }
 

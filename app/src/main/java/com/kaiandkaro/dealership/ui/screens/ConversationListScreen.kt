@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.kaiandkaro.dealership.models.Conversation
+import com.kaiandkaro.dealership.ui.viewmodels.ConversationDisplay
 import com.kaiandkaro.dealership.ui.viewmodels.ConversationViewModel
 
 @Composable
@@ -36,7 +36,7 @@ fun ConversationListScreen(
         ) {
             items(conversations) { conversation ->
                 ConversationListItem(conversation = conversation) {
-                    navController.navigate("messaging/${conversation.id}")
+                    navController.navigate("messaging/${conversation.conversationId}")
                 }
             }
         }
@@ -44,7 +44,7 @@ fun ConversationListScreen(
 }
 
 @Composable
-fun ConversationListItem(conversation: Conversation, onClick: () -> Unit) {
+fun ConversationListItem(conversation: ConversationDisplay, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -52,7 +52,8 @@ fun ConversationListItem(conversation: Conversation, onClick: () -> Unit) {
             .clickable(onClick = onClick)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = conversation.id, style = MaterialTheme.typography.headlineSmall)
+            Text(text = conversation.otherParticipantName, style = MaterialTheme.typography.headlineSmall)
+            Text(text = conversation.lastMessage, style = MaterialTheme.typography.bodyMedium)
         }
     }
 }

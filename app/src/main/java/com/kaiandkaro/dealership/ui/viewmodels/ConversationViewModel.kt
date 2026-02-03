@@ -37,7 +37,7 @@ class ConversationViewModel @Inject constructor(
                 val displayList = conversations.mapNotNull { conversation ->
                     val otherParticipantId = conversation.participants.firstOrNull { it != currentUserId } ?: return@mapNotNull null
                     val otherParticipant = authRepository.getUserData(otherParticipantId)
-                    val lastMessage = conversation.messages.lastOrNull()?.content ?: "No messages yet"
+                    val lastMessage = conversation.messages.lastOrNull()?.text ?: "No messages yet"
 
                     ConversationDisplay(
                         conversationId = conversation.id,

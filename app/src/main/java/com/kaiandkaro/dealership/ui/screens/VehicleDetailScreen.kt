@@ -26,8 +26,8 @@ fun VehicleDetailScreen(
     vehicleViewModel: VehicleViewModel = hiltViewModel(),
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
-    val vehicle by vehicleViewModel.vehicles.collectAsState()
-        .let { vehiclesState -> vehiclesState.value.find { it.id == vehicleId } }
+    val vehiclesState by vehicleViewModel.vehicles.collectAsState()
+    val vehicle = vehiclesState.find { it.id == vehicleId }
     val userRole by authViewModel.userRole.collectAsState()
 
     vehicle?.let {

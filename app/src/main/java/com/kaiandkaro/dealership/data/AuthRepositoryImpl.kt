@@ -37,6 +37,10 @@ class AuthRepositoryImpl(
         return firestore.collection("users").document(uid).get().await().toObject(User::class.java)
     }
 
+    override suspend fun updateUserFCMToken(uid: String, token: String) {
+        firestore.collection("users").document(uid).update("fcmToken", token).await()
+    }
+
     override suspend fun getUserRole(uid: String): String? {
         val document = firestore.collection("users").document(uid).get().await()
         return if (document.exists()) {

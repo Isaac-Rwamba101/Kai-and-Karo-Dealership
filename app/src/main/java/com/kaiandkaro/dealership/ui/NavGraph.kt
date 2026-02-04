@@ -6,10 +6,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.kaiandkaro.dealership.ui.screens.ConversationListScreen
 import com.kaiandkaro.dealership.ui.screens.MessagingScreen
-import com.kaiandkaro.dealership.ui.screens.login.LoginScreen
-import com.kaiandkaro.dealership.ui.screens.signup.SignupScreen
-import com.kaiandkaro.dealership.ui.screens.vehicles.VehiclesScreen
-import com.kaiandkaro.dealership.ui.screens.admin.AdminDashboardScreen
+import com.kaiandkaro.dealership.ui.screens.LoginScreen
+import com.kaiandkaro.dealership.ui.screens.SignupScreen
+import com.kaiandkaro.dealership.ui.screens.VehiclesScreen
+import com.kaiandkaro.dealership.ui.screens.AdminDashboardScreen
 
 @Composable
 fun NavGraph() {

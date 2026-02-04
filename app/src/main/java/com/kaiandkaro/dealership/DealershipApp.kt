@@ -6,7 +6,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.kaiandkaro.dealership.ui.screens.*
+import com.kaiandkaro.dealership.ui.screens.AddVehicleScreen
+import com.kaiandkaro.dealership.ui.screens.LoginScreen
+import com.kaiandkaro.dealership.ui.screens.SignupScreen
+import com.kaiandkaro.dealership.ui.screens.VehicleDetailScreen
+import com.kaiandkaro.dealership.ui.screens.VehicleListScreen
 
 @Composable
 fun DealershipApp() {
@@ -14,7 +18,7 @@ fun DealershipApp() {
 
     NavHost(navController = navController, startDestination = "login") {
         composable("login") { LoginScreen(navController) }
-        composable("signup") { SignUpScreen(navController) }
+        composable("signup") { SignupScreen(navController) }
         composable("vehicle_list") { VehicleListScreen(navController) }
         composable("add_vehicle") { AddVehicleScreen(navController) }
         composable(

@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.kaiandkaro.dealership.ui.screens.AddVehicleScreen
-import com.kaiandkaro.dealership.ui.screens.LoginScreen
+import com.kaiandkaro.dealership.ui.screens.login.LoginScreen
 import com.kaiandkaro.dealership.ui.screens.SignupScreen
 import com.kaiandkaro.dealership.ui.screens.VehicleDetailScreen
 import com.kaiandkaro.dealership.ui.screens.VehicleListScreen

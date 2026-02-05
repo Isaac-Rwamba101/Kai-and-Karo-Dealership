@@ -24,6 +24,7 @@ fun SignupScreen(
     navController: NavController,
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
+    var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val user by authViewModel.user.collectAsState()
@@ -43,6 +44,12 @@ fun SignupScreen(
         Text(text = "Sign Up", style = MaterialTheme.typography.headlineLarge)
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text("Name") }
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedTextField(
             value = email,
             onValueChange = { email = it },
             label = { Text("Email") }
@@ -55,7 +62,7 @@ fun SignupScreen(
             visualTransformation = PasswordVisualTransformation()
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { authViewModel.signUp(email, password) }) {
+        Button(onClick = { authViewModel.signUp(name, email, password) }) {
             Text("Sign Up")
         }
         Spacer(modifier = Modifier.height(8.dp))

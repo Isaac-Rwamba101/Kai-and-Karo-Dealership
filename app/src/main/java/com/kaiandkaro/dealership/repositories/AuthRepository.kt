@@ -11,4 +11,5 @@ interface AuthRepository {
     suspend fun getUserData(uid: String): User?
     suspend fun getUserRole(uid: String): String?
     suspend fun updateUserFCMToken(uid: String, token: String)
+    suspend fun updateUserRole(uid: String, role: String)
 }

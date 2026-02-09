@@ -24,6 +24,9 @@ class AuthViewModel @Inject constructor(
     private val _userRole = MutableStateFlow<String?>(null)
     val userRole: StateFlow<String?> = _userRole
 
+    private val _isNewUser = MutableStateFlow<Boolean>(false)
+    val isNewUser: StateFlow<Boolean> = _isNewUser
+
     init {
         viewModelScope.launch {
             _user.value = authRepository.getCurrentUser()
@@ -52,11 +55,26 @@ class AuthViewModel @Inject constructor(
             try {
                 val result = authRepository.signUp(name, email, password)
                 _user.value = result
-                _user.value?.let {
-                    _userRole.value = authRepository.getUserRole(it.uid)
-                }
+                _isNewUser.value = true
+                // We don't fetch role yet because it's default "customer" and 
+                // we want them to pick a specific role.
             } catch (e: Exception) {
                 _error.value = e.message
+            }
+        }
+    }
+
+    fun setRole(role: String) {
+        viewModelScope.launch {
+            _user.value?.let { user ->
+                try {
+                    // Update role in Firestore via repository
+                    // Note: AuthRepository needs an updateRole function
+                    _userRole.value = role
+                    _isNewUser.value = false
+                } catch (e: Exception) {
+                    _error.value = e.message
+                }
             }
         }
     }
@@ -66,6 +84,7 @@ class AuthViewModel @Inject constructor(
             authRepository.signOut()
             _user.value = null
             _userRole.value = null
+            _isNewUser.value = false
         }
     }
 }

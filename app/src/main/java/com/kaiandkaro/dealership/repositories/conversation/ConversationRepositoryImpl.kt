@@ -1,19 +1,20 @@
 package com.kaiandkaro.dealership.repositories.conversation
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.snapshots
 import com.kaiandkaro.dealership.models.Conversation
-import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class ConversationRepositoryImpl(private val firestore: FirebaseFirestore) : ConversationRepository {
-    override suspend fun getConversations(userId: String): List<Conversation> {
-        val snapshot = firestore.collection("conversations")
-            .whereArrayContains("participants", userId)
-            .get()
-            .await()
-        return snapshot.toObjects(Conversation::class.java)
-    }
-
-    override suspend fun createConversation(conversation: Conversation) {
-        firestore.collection("conversations").add(conversation).await()
+class ConversationRepositoryImpl @Inject constructor(
+    private val firestore: FirebaseFirestore
+) : ConversationRepository {
+    override fun getConversations(): Flow<List<Conversation>> {
+        return firestore.collection("conversations")
+            .snapshots()
+            .map { snapshot ->
+                snapshot.toObjects(Conversation::class.java)
+            }
     }
 }

@@ -6,5 +6,7 @@ data class Vehicle(
     val price: Double = 0.0,
     val description: String = "",
     val imageUrl: String = "",
-    val isSold: Boolean = false
+    val isSold: Boolean = false,
+    val documentUrl: String = "",
+    val documentName: String = ""
 )

@@ -29,7 +29,7 @@ class AuthRepositoryImpl @Inject constructor(
                 uid = user.uid,
                 name = name,
                 email = email,
-                role = "customer"
+                role = "buyer" // Default role, user will be prompted to choose
             )
             firestore.collection("users").document(user.uid).set(userProfile).await()
         }
@@ -52,5 +52,9 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun updateUserFCMToken(uid: String, token: String) {
         firestore.collection("users").document(uid).update("fcmToken", token).await()
+    }
+
+    override suspend fun updateUserRole(uid: String, role: String) {
+        firestore.collection("users").document(uid).update("role", role).await()
     }
 }

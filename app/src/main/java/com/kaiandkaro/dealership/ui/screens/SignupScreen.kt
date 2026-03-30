@@ -27,13 +27,8 @@ fun SignupScreen(
     val user by authViewModel.user.collectAsState()
     val error by authViewModel.error.collectAsState()
 
-    LaunchedEffect(user) {
-        user?.let {
-            navController.navigate("home") {
-                popUpTo("login") { inclusive = true }
-            }
-        }
-    }
+    // Removed the automatic navigation from here because DealershipApp
+    // now handles the redirection logic more reliably based on user state.
 
     SignupContent(
         error = error,

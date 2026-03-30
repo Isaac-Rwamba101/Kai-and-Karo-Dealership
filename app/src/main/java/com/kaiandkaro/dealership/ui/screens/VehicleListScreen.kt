@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -24,22 +25,31 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.kaiandkaro.dealership.models.Vehicle
 import com.kaiandkaro.dealership.ui.theme.DealershipTheme
+import com.kaiandkaro.dealership.ui.viewmodels.AuthViewModel
 import com.kaiandkaro.dealership.ui.viewmodels.VehicleViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VehicleListScreen(
     navController: NavController,
-    vehicleViewModel: VehicleViewModel = hiltViewModel()
+    vehicleViewModel: VehicleViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val vehicles by vehicleViewModel.vehicles.collectAsState()
     val error by vehicleViewModel.error.collectAsState()
+    val currentUser by authViewModel.user.collectAsState()
 
     VehicleListContent(
         vehicles = vehicles,
         error = error,
+        currentUserId = currentUser?.uid ?: "",
         onAddVehicleClick = { navController.navigate("add_vehicle") },
-        onVehicleClick = { vehicleId -> navController.navigate("vehicle_detail/$vehicleId") }
+        onVehicleClick = { vehicleId -> navController.navigate("vehicle_detail/$vehicleId") },
+        onMessageClick = { sellerId -> 
+            // In a real app, you'd create a conversation ID first.
+            // For now, we'll navigate to messaging with the sellerId.
+            navController.navigate("messaging/$sellerId") 
+        }
     )
 }
 
@@ -48,8 +58,10 @@ fun VehicleListScreen(
 fun VehicleListContent(
     vehicles: List<Vehicle>,
     error: String?,
+    currentUserId: String,
     onAddVehicleClick: () -> Unit,
-    onVehicleClick: (String) -> Unit
+    onVehicleClick: (String) -> Unit,
+    onMessageClick: (String) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -105,7 +117,11 @@ fun VehicleListContent(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(vehicles) { vehicle ->
-                        VehicleListItem(vehicle = vehicle) {
+                        VehicleListItem(
+                            vehicle = vehicle,
+                            showChatIcon = vehicle.sellerId != currentUserId,
+                            onMessageClick = { onMessageClick(vehicle.sellerId) }
+                        ) {
                             onVehicleClick(vehicle.id)
                         }
                     }
@@ -116,7 +132,12 @@ fun VehicleListContent(
 }
 
 @Composable
-fun VehicleListItem(vehicle: Vehicle, onClick: () -> Unit) {
+fun VehicleListItem(
+    vehicle: Vehicle, 
+    showChatIcon: Boolean,
+    onMessageClick: () -> Unit,
+    onClick: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -126,15 +147,30 @@ fun VehicleListItem(vehicle: Vehicle, onClick: () -> Unit) {
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column {
-            AsyncImage(
-                model = vehicle.imageUrl,
-                contentDescription = vehicle.name,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
-                contentScale = ContentScale.Crop
-            )
+            Box {
+                AsyncImage(
+                    model = vehicle.imageUrl,
+                    contentDescription = vehicle.name,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
+                    contentScale = ContentScale.Crop
+                )
+                if (showChatIcon) {
+                    FilledIconButton(
+                        onClick = onMessageClick,
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(12.dp),
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = "Message Seller")
+                    }
+                }
+            }
             Column(modifier = Modifier.padding(16.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -154,6 +190,11 @@ fun VehicleListItem(vehicle: Vehicle, onClick: () -> Unit) {
                     )
                 }
                 Spacer(modifier = Modifier.height(4.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    SuggestionChip(onClick = { }, label = { Text(vehicle.year) })
+                    SuggestionChip(onClick = { }, label = { Text(vehicle.type) })
+                }
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = vehicle.description,
                     style = MaterialTheme.typography.bodyMedium,
@@ -169,15 +210,33 @@ fun VehicleListItem(vehicle: Vehicle, onClick: () -> Unit) {
 @Composable
 fun VehicleListScreenPreview() {
     val sampleVehicles = listOf(
-        Vehicle("1", "Toyota Camry 2024", 25000.0, "Reliable and fuel-efficient sedan.", "https://example.com/camry.jpg"),
-        Vehicle("2", "Ford F-150", 45000.0, "Powerful pickup truck for all your needs.", "https://example.com/f150.jpg")
+        Vehicle(
+            id = "1", 
+            name = "Toyota Camry 2024", 
+            price = 25000.0, 
+            description = "Reliable and fuel-efficient sedan.", 
+            imageUrl = "https://example.com/camry.jpg",
+            year = "2024",
+            type = "Sedan"
+        ),
+        Vehicle(
+            id = "2", 
+            name = "Ford F-150", 
+            price = 45000.0, 
+            description = "Powerful pickup truck for all your needs.", 
+            imageUrl = "https://example.com/f150.jpg",
+            year = "2023",
+            type = "Truck"
+        )
     )
     DealershipTheme {
         VehicleListContent(
             vehicles = sampleVehicles,
             error = null,
+            currentUserId = "user123",
             onAddVehicleClick = {},
-            onVehicleClick = {}
+            onVehicleClick = {},
+            onMessageClick = {}
         )
     }
 }

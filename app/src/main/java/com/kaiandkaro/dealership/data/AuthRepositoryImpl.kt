@@ -6,8 +6,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.kaiandkaro.dealership.models.User
 import com.kaiandkaro.dealership.repositories.AuthRepository
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
-class AuthRepositoryImpl(
+class AuthRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore
 ) : AuthRepository {
@@ -23,7 +24,12 @@ class AuthRepositoryImpl(
         val result = auth.createUserWithEmailAndPassword(email, password).await()
         val firebaseUser = result.user
         if (firebaseUser != null) {
-            val user = User(uid = firebaseUser.uid, name = name, email = email)
+            val user = User(
+                uid = firebaseUser.uid, 
+                name = name, 
+                email = email,
+                role = "" // Empty role implies selection is needed
+            )
             firestore.collection("users").document(firebaseUser.uid).set(user).await()
         }
         return firebaseUser
@@ -44,9 +50,13 @@ class AuthRepositoryImpl(
     override suspend fun getUserRole(uid: String): String? {
         val document = firestore.collection("users").document(uid).get().await()
         return if (document.exists()) {
-            document.getString("role") ?: "buyer"
+            document.getString("role")
         } else {
-            "buyer"
+            null
         }
+    }
+
+    override suspend fun updateUserRole(uid: String, role: String) {
+        firestore.collection("users").document(uid).update("role", role).await()
     }
 }

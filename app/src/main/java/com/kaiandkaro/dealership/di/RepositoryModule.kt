@@ -1,8 +1,8 @@
 package com.kaiandkaro.dealership.di
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.kaiandkaro.dealership.data.VehicleRepositoryImpl
 import com.kaiandkaro.dealership.repositories.VehicleRepository
-import com.kaiandkaro.dealership.repositories.VehicleRepositoryImpl
 import com.kaiandkaro.dealership.repositories.conversation.ConversationRepository
 import com.kaiandkaro.dealership.repositories.conversation.ConversationRepositoryImpl
 import com.kaiandkaro.dealership.repositories.messaging.MessagingRepository
@@ -11,6 +11,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.jan.supabase.storage.Storage
 import javax.inject.Singleton
 
 @Module
@@ -19,8 +20,11 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideVehicleRepository(firestore: FirebaseFirestore): VehicleRepository {
-        return VehicleRepositoryImpl(firestore)
+    fun provideVehicleRepository(
+        firestore: FirebaseFirestore,
+        storage: Storage
+    ): VehicleRepository {
+        return VehicleRepositoryImpl(firestore, storage)
     }
 
     @Provides

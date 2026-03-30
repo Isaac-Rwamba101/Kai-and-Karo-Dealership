@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.kaiandkaro.dealership.models.Message
+import com.kaiandkaro.dealership.models.User
 import com.kaiandkaro.dealership.ui.theme.DealershipTheme
 import com.kaiandkaro.dealership.ui.viewmodels.MessageDisplay
 import com.kaiandkaro.dealership.ui.viewmodels.MessagingViewModel
@@ -29,16 +30,19 @@ import com.kaiandkaro.dealership.ui.viewmodels.MessagingViewModel
 fun MessagingScreen(
     navController: NavController,
     messagingViewModel: MessagingViewModel = hiltViewModel(),
-    conversationId: String
+    conversationId: String,
+    otherUserId: String? = null
 ) {
     val messages by messagingViewModel.messages.collectAsState()
+    val otherUser by messagingViewModel.otherUser.collectAsState()
 
-    LaunchedEffect(conversationId) {
-        messagingViewModel.loadMessages(conversationId)
+    LaunchedEffect(conversationId, otherUserId) {
+        messagingViewModel.loadMessages(conversationId, otherUserId)
     }
 
     MessagingContent(
         messages = messages,
+        otherUser = otherUser,
         onSendMessage = { messagingViewModel.sendMessage(it) },
         onBackClick = { navController.popBackStack() }
     )
@@ -48,6 +52,7 @@ fun MessagingScreen(
 @Composable
 fun MessagingContent(
     messages: List<MessageDisplay>,
+    otherUser: User?,
     onSendMessage: (String) -> Unit,
     onBackClick: () -> Unit
 ) {
@@ -63,7 +68,7 @@ fun MessagingContent(
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Text(
-                                    "C",
+                                    otherUser?.name?.take(1)?.uppercase() ?: "?",
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.onPrimaryContainer
                                 )
@@ -72,7 +77,7 @@ fun MessagingContent(
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
                             Text(
-                                "Customer Support",
+                                otherUser?.name ?: "Chat",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
@@ -88,11 +93,7 @@ fun MessagingContent(
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface
-                )
+                }
             )
         }
     ) { paddingValues ->
@@ -122,37 +123,13 @@ fun MessagingContent(
 @Composable
 fun MessageItem(message: MessageDisplay) {
     val alignment = if (message.isFromCurrentUser) Alignment.End else Alignment.Start
-    val containerColor = if (message.isFromCurrentUser) {
-        MaterialTheme.colorScheme.primary
-    } else {
-        MaterialTheme.colorScheme.surface
-    }
-    val contentColor = if (message.isFromCurrentUser) {
-        MaterialTheme.colorScheme.onPrimary
-    } else {
-        MaterialTheme.colorScheme.onSurface
-    }
-    val shape = if (message.isFromCurrentUser) {
-        RoundedCornerShape(16.dp, 16.dp, 0.dp, 16.dp)
-    } else {
-        RoundedCornerShape(16.dp, 16.dp, 16.dp, 0.dp)
-    }
+    val containerColor = if (message.isFromCurrentUser) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
+    val contentColor = if (message.isFromCurrentUser) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+    val shape = if (message.isFromCurrentUser) RoundedCornerShape(16.dp, 16.dp, 0.dp, 16.dp) else RoundedCornerShape(16.dp, 16.dp, 16.dp, 0.dp)
 
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = alignment
-    ) {
-        Surface(
-            color = containerColor,
-            contentColor = contentColor,
-            shape = shape,
-            tonalElevation = 1.dp
-        ) {
-            Text(
-                text = message.message.text,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                style = MaterialTheme.typography.bodyLarge
-            )
+    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = alignment) {
+        Surface(color = containerColor, contentColor = contentColor, shape = shape, tonalElevation = 1.dp) {
+            Text(text = message.message.text, modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp), style = MaterialTheme.typography.bodyLarge)
         }
     }
 }
@@ -161,63 +138,20 @@ fun MessageItem(message: MessageDisplay) {
 @Composable
 fun MessageInput(onSendMessage: (String) -> Unit) {
     var text by remember { mutableStateOf("") }
-
-    Surface(
-        tonalElevation = 2.dp,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .navigationBarsPadding(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+    Surface(tonalElevation = 2.dp, modifier = Modifier.fillMaxWidth()) {
+        Row(modifier = Modifier.padding(16.dp).navigationBarsPadding(), verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(
                 value = text,
                 onValueChange = { text = it },
                 modifier = Modifier.weight(1f),
                 placeholder = { Text("Type a message...") },
                 shape = RoundedCornerShape(24.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                    focusedContainerColor = MaterialTheme.colorScheme.surface,
-                    unfocusedBorderColor = Color.Transparent,
-                    focusedBorderColor = MaterialTheme.colorScheme.primary
-                ),
                 maxLines = 4
             )
             Spacer(modifier = Modifier.width(12.dp))
-            FloatingActionButton(
-                onClick = {
-                    if (text.isNotBlank()) {
-                        onSendMessage(text)
-                        text = ""
-                    }
-                },
-                shape = CircleShape,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(48.dp)
-            ) {
-                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send")
+            IconButton(onClick = { if (text.isNotBlank()) { onSendMessage(text); text = "" } }) {
+                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send", tint = MaterialTheme.colorScheme.primary)
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MessagingScreenPreview() {
-    val sampleMessages = listOf(
-        MessageDisplay(Message(senderId = "1", text = "Hello! How can I help you?", timestamp = System.currentTimeMillis()), false),
-        MessageDisplay(Message(senderId = "2", text = "I'm interested in the Toyota Camry.", timestamp = System.currentTimeMillis()), true),
-        MessageDisplay(Message(senderId = "1", text = "That's a great choice! Would you like to schedule a test drive?", timestamp = System.currentTimeMillis()), false)
-    )
-    DealershipTheme {
-        MessagingContent(
-            messages = sampleMessages,
-            onSendMessage = {},
-            onBackClick = {}
-        )
     }
 }

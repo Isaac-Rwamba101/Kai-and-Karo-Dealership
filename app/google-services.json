@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "8591989006",
-    "project_id": "repairrover-5ec05",
-    "storage_bucket": "repairrover-5ec05.appspot.com"
+    "project_number": "961885950806",
+    "project_id": "kai-and-karo-dealership-32b19",
+    "storage_bucket": "kai-and-karo-dealership-32b19.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:8591989006:android:4877e7498697876011df5f",
+        "mobilesdk_app_id": "1:961885950806:android:0d0d860de086810d68bcf7",
         "android_client_info": {
           "package_name": "com.kaiandkaro.dealership"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDDmq8gyBEcrffnyukfQbySFPOLOgFq1MM"
+          "current_key": "AIzaSyBOxuJGBsiFE0efxXKEjbWQa9zg_DiNlXE"
         }
       ],
       "services": {

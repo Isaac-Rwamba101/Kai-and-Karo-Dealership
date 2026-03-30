@@ -17,13 +17,21 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.kaiandkaro.dealership.ui.theme.DealershipTheme
+import com.kaiandkaro.dealership.ui.viewmodels.AuthViewModel
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(
+    navController: NavController,
+    authViewModel: AuthViewModel = hiltViewModel()
+) {
+    val error by authViewModel.error.collectAsState()
+
     LoginContent(
-        onLoginClick = { email, password -> /* Handle login logic */ },
+        error = error,
+        onLoginClick = { email, password -> authViewModel.signIn(email, password) },
         onSignupClick = { navController.navigate("signup") }
     )
 }
@@ -31,6 +39,7 @@ fun LoginScreen(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginContent(
+    error: String?,
     onLoginClick: (String, String) -> Unit,
     onSignupClick: () -> Unit
 ) {
@@ -104,6 +113,15 @@ fun LoginContent(
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            error?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
             Button(
                 onClick = { onLoginClick(email, password) },
                 modifier = Modifier
@@ -131,6 +149,7 @@ fun LoginContent(
 fun LoginScreenPreview() {
     DealershipTheme {
         LoginContent(
+            error = null,
             onLoginClick = { _, _ -> },
             onSignupClick = {}
         )

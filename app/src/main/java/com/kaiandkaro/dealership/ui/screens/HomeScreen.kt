@@ -22,9 +22,11 @@ import com.kaiandkaro.dealership.ui.theme.DealershipTheme
 @Composable
 fun HomeScreen(
     navController: NavController,
+    isAdmin: Boolean,
     onMenuClick: () -> Unit
 ) {
     HomeContent(
+        isAdmin = isAdmin,
         onMenuClick = onMenuClick,
         onNavigateToVehicles = { navController.navigate("vehicle_list") },
         onNavigateToAddVehicle = { navController.navigate("add_vehicle") },
@@ -37,6 +39,7 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeContent(
+    isAdmin: Boolean,
     onMenuClick: () -> Unit,
     onNavigateToVehicles: () -> Unit,
     onNavigateToAddVehicle: () -> Unit,
@@ -73,14 +76,18 @@ fun HomeContent(
                 modifier = Modifier.padding(bottom = 24.dp)
             )
 
-            val homeItems = listOf(
+            val homeItems = mutableListOf(
                 HomeWidget("Browse Cars", Icons.Default.DirectionsCar, onNavigateToVehicles),
                 HomeWidget("Sell Your Car", Icons.Default.AddCircle, onNavigateToAddVehicle),
                 HomeWidget("Messages", Icons.Default.Chat, onNavigateToConversations),
-                HomeWidget("Our Website", Icons.Default.Language, onNavigateToWebsite),
-                HomeWidget("Admin Panel", Icons.Default.AdminPanelSettings, onNavigateToAdmin),
-                HomeWidget("Profile", Icons.Default.Person, {})
+                HomeWidget("Our Website", Icons.Default.Language, onNavigateToWebsite)
             )
+
+            if (isAdmin) {
+                homeItems.add(HomeWidget("Admin Panel", Icons.Default.AdminPanelSettings, onNavigateToAdmin))
+            }
+
+            homeItems.add(HomeWidget("Profile", Icons.Default.Person, {}))
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -141,6 +148,6 @@ fun HomeCard(item: HomeWidget) {
 @Composable
 fun HomeScreenPreview() {
     DealershipTheme {
-        HomeContent({}, {}, {}, {}, {}, {})
+        HomeContent(true, {}, {}, {}, {}, {}, {})
     }
 }
